@@ -12,13 +12,14 @@ exports.salary_calculate = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: response
+            message: response.Message || "Salary calculated successfully",
+            data: response.data || []
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(error.status || 500).json({
             success: false,
             message: "Salary calculation failed",
-            error: error.message
+            error: error.data?.error || error.data?.message || error.message
         });
     }
 };
@@ -33,13 +34,13 @@ exports.salary_list = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: response
+            data: Array.isArray(response) ? response : response.data || []
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(error.status || 500).json({
             success: false,
             message: "Fetching salary list failed",
-            error: error.message
+            error: error.data?.error || error.data?.message || error.message
         });
     }
 };
@@ -55,13 +56,37 @@ exports.salary_pay = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: response
+            message: response.Message || "Salary marked as Paid successfully",
+            data: response.data || response
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(error.status || 500).json({
             success: false,
             message: "Marking salary as paid failed",
-            error: error.message
+            error: error.data?.error || error.data?.message || error.message
+        });
+    }
+};
+
+exports.salary_cancel = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const response = await api_call(
+            `${process.env.SALARY_API}/api/tenant/salary/${id}/cancel/`,
+            "PUT"
+        );
+
+        res.status(200).json({
+            success: true,
+            message: response.Message || "Salary cancelled successfully",
+            data: response.data || response
+        });
+    } catch (error) {
+        res.status(error.status || 500).json({
+            success: false,
+            message: "Cancelling salary record failed",
+            error: error.data?.error || error.data?.message || error.message
         });
     }
 };
@@ -77,13 +102,14 @@ exports.salary_delete = async (req, res) => {
 
         res.status(200).json({
             success: true,
+            message: response.Message || "Salary record deleted successfully",
             data: response
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(error.status || 500).json({
             success: false,
             message: "Deleting salary record failed",
-            error: error.message
+            error: error.data?.error || error.data?.message || error.message
         });
     }
 };

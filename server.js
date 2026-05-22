@@ -21,4 +21,4 @@ app.use('/tenant/employee', require('./route/tenant_employee'))
 app.use('/tenant/attendance', require('./route/tenant_attendance'))
 app.use('/tenant/salary', require('./route/tenant_salary'))
 
-app.listen(process.env.SERVER_PORT, () => console.log(`Server running on ${process.env.SERVER_PORT}`));
+app.listen(process.env.SERVER_PORT, '0.0.0.0', () => console.log(`Server running on ${process.env.SERVER_PORT}`));
