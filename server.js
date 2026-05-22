@@ -23,6 +23,7 @@ app.use('/user', require('./route/user'))
 app.use('/tenant', require('./route/tenant'))
 app.use('/tenant/employee', require('./route/tenant_employee'))
 app.use('/tenant/attendance', require('./route/tenant_attendance'))
+app.use('/tenant/leave', require('./route/tenant_leave'))
 app.use('/tenant/salary', require('./route/tenant_salary'))
 
 app.get("/", (req, res) => {
