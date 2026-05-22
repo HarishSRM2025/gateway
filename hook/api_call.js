@@ -1,5 +1,10 @@
 const api_call = async (endpoint, method = "GET", req_data = null) => {
     try {
+        if (!endpoint || endpoint.startsWith("undefined")) {
+            const configError = new Error("Upstream API URL is not configured");
+            configError.status = 500;
+            throw configError;
+        }
 
         const options = {
             method,
@@ -20,7 +25,10 @@ const api_call = async (endpoint, method = "GET", req_data = null) => {
             return { message: "Operation successful" };
         }
         
-        const data = await response.json();
+        const contentType = response.headers.get("content-type") || "";
+        const data = contentType.includes("application/json")
+            ? await response.json()
+            : { message: await response.text() };
 
         if (!response.ok) {
             const apiError = new Error(data.message || "API call failed");
