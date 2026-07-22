@@ -1,4 +1,7 @@
 const api_call = async (endpoint, method = "GET", req_data = null) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
     try {
         if (!endpoint || endpoint.startsWith("undefined")) {
             const configError = new Error("Upstream API URL is not configured");
@@ -11,6 +14,7 @@ const api_call = async (endpoint, method = "GET", req_data = null) => {
             headers: {
                 "Content-Type": "application/json",
             },
+            signal: controller.signal
         };
 
         console.log(`Making API call to ${endpoint} with method ${method} and data:`, req_data);
@@ -19,6 +23,7 @@ const api_call = async (endpoint, method = "GET", req_data = null) => {
         }
 
         const response = await fetch(endpoint, options);
+        clearTimeout(timeoutId);
         
         // Handle responses without body (like 204 No Content)
         if (response.status === 204) {
@@ -40,7 +45,22 @@ const api_call = async (endpoint, method = "GET", req_data = null) => {
         return data;
 
     } catch (error) {
+        clearTimeout(timeoutId);
         console.error(`API ${method} call error:`, error.message);
+        
+        if (error.name === "AbortError") {
+            const timeoutError = new Error(`Gateway Timeout: Upstream service at ${endpoint} did not respond within 8 seconds.`);
+            timeoutError.status = 504;
+            throw timeoutError;
+        }
+
+        if (!error.status) {
+            // It's a connection refused or other network level failure
+            const badGatewayError = new Error(`Bad Gateway: Could not connect to upstream service at ${endpoint}. Connection refused or service offline.`);
+            badGatewayError.status = 502;
+            throw badGatewayError;
+        }
+        
         throw error;
     }
 };

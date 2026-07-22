@@ -28,6 +28,13 @@ exports.getAllTenants = async (req, res) => {
             `${process.env.AUTH_API}/api/v1/tenant/get/alltenant`
         );
 
+        if (req.user && req.user.user_role !== "SUPER_ADMIN") {
+            const userId = req.user.id;
+            if (response && response.success && Array.isArray(response.data)) {
+                response.data = response.data.filter(t => t.tenant_owner_id === userId);
+            }
+        }
+
         res.status(200).json({
             success: true,
             data: response
@@ -44,6 +51,22 @@ exports.getAllTenants = async (req, res) => {
 exports.deleteTenant = async (req, res) => {
     try {
         const { id } = req.params;
+
+        if (req.user && req.user.user_role !== "SUPER_ADMIN") {
+            const tenantRes = await api_call(
+                `${process.env.AUTH_API}/api/v1/tenant/get/alltenant`
+            );
+            if (tenantRes && tenantRes.success && Array.isArray(tenantRes.data)) {
+                const tenantObj = tenantRes.data.find(t => t.id === parseInt(id, 10));
+                if (!tenantObj || tenantObj.tenant_owner_id !== req.user.id) {
+                    return res.status(403).json({
+                        success: false,
+                        message: "Insufficient permissions to delete this tenant"
+                    });
+                }
+            }
+        }
+
         const response = await api_call(
             `${process.env.AUTH_API}/api/v1/tenant/delete/${id}`,
             "DELETE"

@@ -1,5 +1,5 @@
 const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, ".env") });
+require("dotenv").config({ path: path.join(__dirname, ".env"), override: true });
 process.env.AUTH_API ||= "https://auth-service-bay-ten.vercel.app";
 process.env.EMP_API ||= "https://employee-info-dsey.onrender.com";
 process.env.SALARY_API ||= "https://employee-salary-z0ak.onrender.com";
