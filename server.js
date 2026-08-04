@@ -26,6 +26,8 @@ app.use('/tenant/attendance', require('./route/tenant_attendance'))
 app.use('/tenant/leave', require('./route/tenant_leave'))
 app.use('/tenant/salary', require('./route/tenant_salary'))
 app.use('/tenant/activities', require('./route/tenant_activity'))
+app.use('/tenant/tasks', require('./route/tenant_task'))
+app.use('/tenant/stats', require('./route/tenant_stats'))
 
 app.get("/", (req, res) => {
   res.json({
