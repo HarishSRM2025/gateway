@@ -103,4 +103,25 @@ exports.getTenantBySlug = async (req, res) => {
         });
     }
 };
+
+exports.updateTenant = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const response = await api_call(
+            `${process.env.AUTH_API}/api/v1/tenant/update/${id}`,
+            "PUT",
+            req.body
+        );
+        res.status(200).json({
+            success: true,
+            data: response
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to update tenant",
+            error: error.message
+        });
+    }
+};
     
