@@ -47,6 +47,26 @@ exports.signin = async (req ,res) => {
     }
 }
 
+exports.changePassword = async (req, res) => {
+    try {
+        const body = req.body;
+        const response = await api_call(
+            `${process.env.AUTH_API}/api/v1/tenant/user/change-password`,
+            'POST',
+            body
+        );
+        res.status(200).json({ success: true, data: response });
+    } catch (error) {
+        const status = error.status || 500;
+        const responseBody = error.data || {};
+        res.status(status).json({
+            success: false,
+            message: "Change password failed",
+            error: responseBody.message || responseBody.error || error.message,
+        });
+    }
+}
+
 exports.getUsersByTenant = async (req, res) => {
     try {
         const { tenant_id } = req.params;

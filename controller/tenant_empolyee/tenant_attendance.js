@@ -2,20 +2,19 @@ const { api_call } = require('../../hook/api_call');
 
 exports.attendance_list = async (req, res) => {
     try {
-        const response = await api_call(
-            `${process.env.EMP_API}/api/tenant/attendance/`,
-            'GET'
-        );
+        const queryParams = new URLSearchParams(req.query).toString();
+        const url = `${process.env.EMP_API}/api/tenant/attendance/${queryParams ? '?' + queryParams : ''}`;
+        const response = await api_call(url, 'GET');
 
         res.status(200).json({
             success: true,
             data: response
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(error.status || 500).json({
             success: false,
             message: 'Attendance list fetch failed',
-            error: error.message
+            error: error.data?.message || error.message
         });
     }
 };
