@@ -1,6 +1,6 @@
 const api_call = async (endpoint, method = "GET", req_data = null) => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     try {
         if (!endpoint || endpoint.startsWith("undefined")) {
@@ -49,7 +49,7 @@ const api_call = async (endpoint, method = "GET", req_data = null) => {
         console.error(`API ${method} call error:`, error.message);
         
         if (error.name === "AbortError") {
-            const timeoutError = new Error(`Gateway Timeout: Upstream service at ${endpoint} did not respond within 8 seconds.`);
+            const timeoutError = new Error(`Gateway Timeout: Upstream service at ${endpoint} did not respond within 60 seconds.`);
             timeoutError.status = 504;
             throw timeoutError;
         }
